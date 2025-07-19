@@ -1,11 +1,90 @@
-WERSA: Wavelet-Enhanced Random Spectral AttentionThis repository provides the official implementation of WERSA, a novel attention mechanism with linear O(n) time complexity, designed to scale Transformer models to very long sequences without a performance trade-off.This guide provides a complete walkthrough for installing the wersa package and building a custom Qwen-like causal language model using this attention layer.🔬 The Science Behind WERSAStandard attention mechanisms are computationally costly, with a quadratic (O(n2)) complexity that makes processing long sequences impractical. WERSA addresses this by combining several powerful principles to achieve linear (O(n)) efficiency while maintaining high performance.Core PrinciplesMulti-Resolution Analysis: WERSA uses Haar wavelet transforms to decompose the input into multiple scales. This allows the model to simultaneously capture fine-grained local details (with high-frequency wavelets) and broad global context (with low-frequency wavelets).Adaptive Filtering: An MLP generates input-dependent filters, and learnable scale_weights modulate each wavelet level. This allows the model to dynamically prioritize the most informative frequency components, suppressing noise and amplifying important patterns.Linear Complexity via Random Features: To achieve O(n) complexity, WERSA uses random feature projection to approximate the softmax kernel, avoiding the computation of the full quadratic attention matrix. The WERSA Long-Context Approximation Theorem provides formal guarantees that this approach approximates standard attention with bounded error.WERSA Architecture FlowThe diagram below illustrates the flow of information through the WERSA mechanism, from input projections to the final attention output.Performance HighlightsThe scientific principles behind WERSA translate into tangible benefits. On the ArXiv classification benchmark, WERSA not only improves accuracy over vanilla attention by 1.2% but also cuts training time by 81% and FLOPS by 73.4%.On the challenging ArXiv-128k dataset, which causes Out-Of-Memory errors for standard and FlashAttention-2, WERSA achieves the best accuracy (79.1%) among all viable methods, demonstrating its unique ability to scale to very long sequences.⚙️ Step 1: Environment & InstallationBefore using the package, ensure you have a Python environment with PyTorch and the necessary Hugging Face libraries.1. Install Core Dependencies with PipInstall PyTorch for your specific CUDA version, along with the core Hugging Face libraries.# Example for CUDA 12.1
+```markdown
+# WERSA: Wavelet-Enhanced Random Spectral Attention
+
+This repository provides the official implementation of **WERSA**, a novel attention mechanism with linear O(n) time complexity, designed to scale Transformer models to very long sequences **without a performance trade-off**.
+
+This guide provides a complete walkthrough for installing the `wersa` package and building a custom Qwen-like causal language model using this attention layer.
+
+---
+
+## 🔬 The Science Behind WERSA
+
+Standard attention mechanisms in Transformers have a **quadratic (O(n²))** time complexity, making them computationally expensive for long sequences. **WERSA** solves this by combining several powerful principles to achieve **linear (O(n))** efficiency while maintaining high performance.
+
+### Core Principles
+
+- **Multi-Resolution Analysis:**  
+  WERSA uses Haar wavelet transforms to decompose the input into multiple scales. This allows the model to simultaneously capture fine-grained local details (with high-frequency wavelets) and broad global context (with low-frequency wavelets).
+
+- **Adaptive Filtering:**  
+  An MLP generates input-dependent filters, and learnable `scale_weights` modulate each wavelet level. This allows the model to dynamically prioritize the most informative frequency components, suppressing noise and amplifying important patterns.
+
+- **Linear Complexity via Random Features:**  
+  To achieve O(n) complexity, WERSA uses random feature projection to approximate the softmax kernel, avoiding the computation of the full quadratic attention matrix. The WERSA Long-Context Approximation Theorem provides formal guarantees that this approach approximates standard attention with bounded error.
+
+---
+
+### WERSA Architecture Flow
+
+The diagram below illustrates the flow of information through the WERSA mechanism, from input projections to the final attention output.
+
+<!-- Optionally, insert architecture diagram here -->
+
+---
+
+### Performance Highlights
+
+The scientific principles behind WERSA translate into tangible benefits:
+
+- **ArXiv classification benchmark:**  
+  WERSA improves accuracy over vanilla attention by **1.2%**, cuts training time by **81%** and FLOPS by **73.4%**.
+
+- **ArXiv-128k dataset:**  
+  On this large-scale benchmark (which causes Out-Of-Memory errors for standard and FlashAttention-2), WERSA achieves the best accuracy (**79.1%**) among all viable methods, demonstrating its unique ability to scale to very long sequences.
+
+---
+
+## ⚙️ Step 1: Environment & Installation
+
+Before using the package, ensure you have a Python environment with **PyTorch** and the necessary **Hugging Face** libraries.
+
+### 1. Install Core Dependencies with Pip
+
+Install PyTorch for your specific CUDA version, along with the core Hugging Face libraries.
+
+```bash
+# Example for CUDA 12.1
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 # Install Hugging Face libraries
 pip install transformers datasets accelerate
-2. Install the WERSA PackageClone this repository and install the local wersa package in editable mode. This allows any changes you make to the source code to be immediately available.# Navigate to the root directory of this project
+```
+
+### 2. Install the WERSA Package
+
+Clone this repository and install the local `wersa` package in editable mode.
+This allows any changes you make to the source code to be immediately available.
+
+```bash
+# Navigate to the root directory of this project
 pip install -e .
-🚀 Step 2: Building a Qwen-like Model with WERSAWith the package installed, you can now build a causal language model using the custom WersaForCausalLM class. This class replaces the standard attention mechanism with WERSA.The following script demonstrates how to configure and pre-train a small, Qwen-style architecture on the WikiText dataset.train_qwen_wersa.py# train_qwen_wersa.py
+```
+
+---
+
+## 🚀 Step 2: Building a Qwen-like Model with WERSA
+
+With the package installed, you can now build a causal language model using the custom `WersaForCausalLM` class.  
+This class replaces the standard attention mechanism with WERSA.
+
+The following script demonstrates how to configure and pre-train a small, Qwen-style architecture on the WikiText dataset.
+
+---
+
+### `train_qwen_wersa.py`
+
+```python
+# train_qwen_wersa.py
 import torch
 from transformers import (
     AutoTokenizer,
@@ -107,3 +186,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+
+---
+
+By Vincenzo Dentamaro vincenzo.dentamaro@uniba.it
+```
